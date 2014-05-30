@@ -62,7 +62,7 @@ static unsigned long msm_mem_allocate(struct videobuf2_contig_pmem *mem)
 		goto alloc_failed;
 	}
 	rc = ion_map_iommu(mem->client, mem->ion_handle,
-			CAMERA_DOMAIN, GEN_POOL, SZ_4K, 0,
+		    CAMERA_DOMAIN, GEN_POOL, SZ_4K, 0,
 			(unsigned long *)&phyaddr,
 			(unsigned long *)&len, 0, 0);
 	if (rc < 0) {
@@ -182,6 +182,8 @@ int videobuf2_pmem_contig_user_get(struct videobuf2_contig_pmem *mem,
 	unsigned long kvstart;
 #endif
 	unsigned long paddr = 0;
+    unsigned long ionflag;
+    void *vaddr;
 	if (mem->phyaddr != 0)
 		return 0;
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
@@ -194,20 +196,6 @@ int videobuf2_pmem_contig_user_get(struct videobuf2_contig_pmem *mem,
             SZ_4K, 0, (unsigned long *)&mem->phyaddr, &len, 0, 0);
     if (rc < 0)
             ion_free(client, mem->ion_handle);
-
-    rc = ion_handle_get_flags(client, mem->ion_handle, &ionflag);
-    if (rc) {
-            pr_err("%s: could not get flags for the handle\n", __func__);
-            return 0;
-    }
-    D("ionflag=%ld\n", ionflag);
-    vaddr = ion_map_kernel(client, mem->ion_handle);
-    if (IS_ERR_OR_NULL(vaddr)) {
-            pr_err("%s: could not get virtual address\n", __func__);
-            return 0;
-    }
-    mem->arm_vaddr = vaddr;
-    D("arm_vaddr=0x%lx\n", (unsigned long) mem->arm_vaddr);
 #elif CONFIG_ANDROID_PMEM
 	rc = get_pmem_file((int)mem->vaddr, (unsigned long *)&mem->phyaddr,
 					&kvstart, &len, &mem->file);
@@ -234,7 +222,7 @@ int videobuf2_pmem_contig_user_get(struct videobuf2_contig_pmem *mem,
 EXPORT_SYMBOL_GPL(videobuf2_pmem_contig_user_get);
 
 void videobuf2_pmem_contig_user_put(struct videobuf2_contig_pmem *mem,
-					struct ion_client *client)
+				struct ion_client *client)
 {
 	if (mem->is_userptr) {
 #ifdef CONFIG_MSM_MULTIMEDIA_USE_ION
