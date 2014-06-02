@@ -633,11 +633,11 @@ static int kgsl_pwrctrl_reset_count_show(struct device *dev,
 	return snprintf(buf, PAGE_SIZE, "%d\n", device->reset_counter);
 }
 
-DEVICE_ATTR(gpuclk, 0644, kgsl_pwrctrl_gpuclk_show, kgsl_pwrctrl_gpuclk_store);
-DEVICE_ATTR(max_gpuclk, 0644, kgsl_pwrctrl_max_gpuclk_show,
+DEVICE_ATTR(gpuclk, 0666, kgsl_pwrctrl_gpuclk_show, kgsl_pwrctrl_gpuclk_store);
+DEVICE_ATTR(max_gpuclk, 0666, kgsl_pwrctrl_max_gpuclk_show,
 	kgsl_pwrctrl_max_gpuclk_store);
-DEVICE_ATTR(pwrnap, 0664, kgsl_pwrctrl_pwrnap_show, kgsl_pwrctrl_pwrnap_store);
-DEVICE_ATTR(idle_timer, 0644, kgsl_pwrctrl_idle_timer_show,
+DEVICE_ATTR(pwrnap, 0666, kgsl_pwrctrl_pwrnap_show, kgsl_pwrctrl_pwrnap_store);
+DEVICE_ATTR(idle_timer, 0666, kgsl_pwrctrl_idle_timer_show,
 	kgsl_pwrctrl_idle_timer_store);
 DEVICE_ATTR(gpubusy, 0444, kgsl_pwrctrl_gpubusy_show,
 	NULL);
@@ -646,13 +646,13 @@ DEVICE_ATTR(gputop, 0444, kgsl_pwrctrl_gputop_show,
 DEVICE_ATTR(gpu_available_frequencies, 0444,
 	kgsl_pwrctrl_gpu_available_frequencies_show,
 	NULL);
-DEVICE_ATTR(max_pwrlevel, 0644,
+DEVICE_ATTR(max_pwrlevel, 0666,
 	kgsl_pwrctrl_max_pwrlevel_show,
 	kgsl_pwrctrl_max_pwrlevel_store);
-DEVICE_ATTR(min_pwrlevel, 0644,
+DEVICE_ATTR(min_pwrlevel, 0666,
 	kgsl_pwrctrl_min_pwrlevel_show,
 	kgsl_pwrctrl_min_pwrlevel_store);
-DEVICE_ATTR(thermal_pwrlevel, 0644,
+DEVICE_ATTR(thermal_pwrlevel, 0666,
 	kgsl_pwrctrl_thermal_pwrlevel_show,
 	kgsl_pwrctrl_thermal_pwrlevel_store);
 DEVICE_ATTR(num_pwrlevels, 0444,

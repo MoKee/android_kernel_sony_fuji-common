@@ -15,6 +15,7 @@
 
 #include <linux/types.h>
 #include <linux/input.h>
+#include <linux/platform_device.h>
 
 /*
  * Macros for clients to convert their data to ib and ab
@@ -43,8 +44,8 @@
 struct msm_bus_vectors {
 	int src; /* Master */
 	int dst; /* Slave */
-	unsigned int ab; /* Arbitrated bandwidth */
-	unsigned int ib; /* Instantaneous bandwidth */
+	uint64_t ab; /* Arbitrated bandwidth */
+	uint64_t ib; /* Instantaneous bandwidth */
 };
 
 struct msm_bus_paths {

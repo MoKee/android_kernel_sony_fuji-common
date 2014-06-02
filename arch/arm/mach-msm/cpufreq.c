@@ -59,13 +59,28 @@ static DEFINE_PER_CPU(struct cpufreq_suspend_t, cpufreq_suspend);
 static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq)
 {
 	int ret = 0;
+	int saved_sched_policy = -EINVAL;
+	int saved_sched_rt_prio = -EINVAL;
 	struct cpufreq_freqs freqs;
 	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
 
 	freqs.old = policy->cur;
 	freqs.new = new_freq;
 	freqs.cpu = policy->cpu;
+
+	/*
+	 * Put the caller into SCHED_FIFO priority to avoid cpu starvation
+	 * in the acpuclk_set_rate path while increasing frequencies
+	 */
+
+	if (freqs.new > freqs.old && current->policy != SCHED_FIFO) {
+		saved_sched_policy = current->policy;
+		saved_sched_rt_prio = current->rt_priority;
+		sched_setscheduler_nocheck(current, SCHED_FIFO, &param);
+	}
+
 	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
+
 	ret = acpuclk_set_rate(policy->cpu, new_freq, SETRATE_CPUFREQ);
 	if (!ret)
 		cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
