@@ -119,7 +119,7 @@ static ssize_t tz_governor_store(struct kgsl_device *device,
 	return count;
 }
 
-PWRSCALE_POLICY_ATTR(governor, 0644, tz_governor_show, tz_governor_store);
+PWRSCALE_POLICY_ATTR(governor, 0666, tz_governor_show, tz_governor_store);
 
 static struct attribute *tz_attrs[] = {
 	&policy_attr_governor.attr,
