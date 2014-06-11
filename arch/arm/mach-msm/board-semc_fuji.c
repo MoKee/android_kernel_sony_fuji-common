@@ -2456,8 +2456,8 @@ unsigned char hdmi_is_primary;
 #define SECURE_SIZE	(MSM_ION_MM_SIZE + MSM_MM_FW_SIZE)
 #endif
 
-#define MSM_ION_SF_SIZE         0x6E00000 /* 110MB */
-#define MSM_ION_CAMERA_SIZE     0x2000000 /*32MB*/
+#define MSM_ION_SF_SIZE         0x7000000 /* 112MB */
+#define MSM_ION_CAMERA_SIZE     0x2200000 /*34MB*/
 
 //#define MSM_ION_SF_SIZE         0x9000000 /* 112MB -> 144MB */
 //#define MSM_ION_CAMERA_SIZE     0x7000000 /* 80MB -> 112MB */
