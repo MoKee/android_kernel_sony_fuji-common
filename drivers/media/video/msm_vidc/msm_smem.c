@@ -79,19 +79,8 @@ static int ion_user_to_kernel(struct smem_client *client,
 	rc = get_device_address(client->clnt, hndl, mem->domain,
 		mem->partition_num, 4096, &iova, &buffer_size, ionflag);
 	if (rc) {
-<<<<<<< HEAD
 		dprintk(VIDC_ERR, "Failed to get device address: %d\n", rc);
 		goto fail_device_address;
-=======
-		pr_err("Failed to get physical address\n");
-		goto fail_map;
-	}
-	mem->kvaddr = ion_map_kernel(client->clnt, hndl);
-	if (!mem->kvaddr) {
-		pr_err("Failed to map shared mem in kernel\n");
-		rc = -EIO;
-		goto fail_map;
->>>>>>> 7d19da5... fix for ion api change
 	}
 
 	mem->mem_type = client->mem_type;
@@ -114,37 +103,23 @@ static int alloc_ion_mem(struct smem_client *client, size_t size,
 		struct msm_smem *mem, int map_kernel)
 {
 	struct ion_handle *hndl;
-<<<<<<< HEAD
 	unsigned long iova = 0;
 	unsigned long buffer_size = 0;
 	unsigned long ionflags = 0;
+	unsigned long heap_mask = 0;
 	int rc = 0;
 	if (flags == SMEM_CACHED)
-		ionflags |= ION_SET_CACHE(CACHED);
+		ionflags = ION_SET_CACHED(CACHED);
 	else
-		ionflags |= ION_SET_CACHE(UNCACHED);
+		ionflags = ION_SET_UNCACHED(UNCACHED);
 
-	ionflags = ionflags | ION_HEAP(ION_CP_MM_HEAP_ID);
+	heap_mask = ION_HEAP(ION_CP_MM_HEAP_ID);
 	if (align < 4096)
 		align = 4096;
 	size = (size + 4095) & (~4095);
 	dprintk(VIDC_DBG, "domain: %d, partition: %d\n",
 		domain, partition);
-	hndl = ion_alloc(client->clnt, size, align, ionflags);
-=======
-	size_t len;
-	unsigned long ionflags = 0;
-	unsigned long heap_mask = 0;
-	int rc = 0;
-	if (size == 0)
-		goto skip_mem_alloc;
-	if (flags)
-		ionflags = ION_SET_CACHED(ionflags);
-	else
-		ionflags = ION_SET_UNCACHED(ionflags);
-	heap_mask = ION_HEAP(ION_CP_MM_HEAP_ID);
 	hndl = ion_alloc(client->clnt, size, align, heap_mask, ionflags);
->>>>>>> 7d19da5... fix for ion api change
 	if (IS_ERR_OR_NULL(hndl)) {
 		dprintk(VIDC_ERR,
 		"Failed to allocate shared memory = %p, %d, %d, 0x%lx\n",
@@ -179,15 +154,6 @@ static int alloc_ion_mem(struct smem_client *client, size_t size,
 		"device_address = 0x%lx, kvaddr = 0x%p, size = %d\n",
 		mem->device_addr, mem->kvaddr, size);
 	mem->size = size;
-<<<<<<< HEAD
-=======
-	mem->kvaddr = ion_map_kernel(client->clnt, hndl);
-	if (!mem->kvaddr) {
-		pr_err("Failed to map shared mem in kernel\n");
-		rc = -EIO;
-		goto fail_map;
-	}
->>>>>>> 7d19da5... fix for ion api change
 	return rc;
 fail_device_address:
 	ion_unmap_kernel(client->clnt, hndl);
