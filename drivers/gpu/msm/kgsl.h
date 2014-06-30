@@ -168,6 +168,7 @@ struct kgsl_memdesc {
 	unsigned int sglen_alloc;  /* Allocated entries in the sglist */
 	struct kgsl_memdesc_ops *ops;
 	unsigned int flags; /* Flags set from userspace */
+	int *faulted;
 };
 
 /* List of different memory entry types */
@@ -262,7 +263,7 @@ static inline int kgsl_gpuaddr_in_memdesc(const struct kgsl_memdesc *memdesc,
 		size = 1;
 
 	/* don't overflow */
-	if (size > UINT_MAX - gpuaddr)
+	if ((gpuaddr + size) < gpuaddr)
 		return 0;
 
 	if (gpuaddr >= memdesc->gpuaddr &&
