@@ -2440,7 +2440,7 @@ unsigned char hdmi_is_primary;
 #endif
 
 #define MSM_MM_FW_SIZE		(0x200000 - MSM_ION_HOLE_SIZE) /*(2MB-128KB)*/
-#define MSM_ION_MM_SIZE		0x6000000  /* (96MB) */
+#define MSM_ION_MM_SIZE		0x3E00000  /* (62MB) */
 #define MSM_ION_MFC_SIZE	SZ_8K
 
 #define MSM_MM_FW_BASE		MSM_SMI_BASE
@@ -2457,7 +2457,7 @@ unsigned char hdmi_is_primary;
 #endif
 
 #define MSM_ION_SF_SIZE         0x8000000 /* 128MB */
-#define MSM_ION_CAMERA_SIZE     0x3000000 /* 48MB */
+#define MSM_ION_CAMERA_SIZE     0x3600000 /* 54MB */
 
 //#define MSM_ION_SF_SIZE         0x9000000 /* 112MB -> 144MB */
 //#define MSM_ION_CAMERA_SIZE     0x7000000 /* 80MB -> 112MB */
@@ -5031,11 +5031,7 @@ static struct pm8xxx_vibrator_platform_data pm8058_vib_pdata = {
 };
 
 static struct pm8xxx_rtc_platform_data pm8058_rtc_pdata = {
-#ifdef CONFIG_RTC_SEMC_ETS
-	.rtc_write_enable       = true,
-#else
-  	.rtc_write_enable       = false,
-#endif
+  	.rtc_write_enable       = true,
 	.rtc_alarm_powerup	= false,
 };
 

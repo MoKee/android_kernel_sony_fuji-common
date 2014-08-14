@@ -1613,8 +1613,8 @@ config FORCE_FAST_CHARGE
 	bool "Force AC charge mode at will"
 	default n
 	help
-		A simple sysfs interface to force adapters that
-		are detected as USB to charge as AC.
+	  A simple sysfs interface to force adapters that
+	  are detected as USB to charge as AC.
 
 if CPU_FREQ_MSM
 
@@ -2773,5 +2773,11 @@ config SONY_SSM
 config CPU_VOLTAGE_TABLE
 	bool "Enable CPU Voltage Table via sysfs for adjustements"	
 	default n
+
+config INTELLI_PLUG
+	bool "Enable intelli-plug cpu hotplug driver"
+	default n
+	help
+	  Generic Intelli-plug cpu hotplug driver for ARM SOCs
 
 endif
