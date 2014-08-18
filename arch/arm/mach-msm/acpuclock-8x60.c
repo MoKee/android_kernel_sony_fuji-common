@@ -800,62 +800,6 @@ out:
 	return rc;
 }
 
-#ifdef CONFIG_PERFLOCK
-unsigned int get_max_cpu_freq(void)
-{
-	struct clkctl_acpu_speed *f;
-	for (f = acpu_freq_tbl; f->acpuclk_khz != 0; f++)
-		;
-	f--;
-	return f->acpuclk_khz;;
-}
-#endif
-
-#ifdef CONFIG_CPU_VOLTAGE_TABLE
-
-ssize_t acpuclk_get_vdd_levels_str(char *buf) {
-
-	int i, len = 0;
-
-	if (buf) {
-		mutex_lock(&drv_state.lock);
-
-		for (i = 0; acpu_freq_tbl[i].acpuclk_khz; i++) {
-			/* updated to use uv required by 8x60 architecture - faux123 */
-			len += sprintf(buf + len, "%8u: %8d\n", acpu_freq_tbl[i].acpuclk_khz, acpu_freq_tbl[i].vdd_sc );
-		}
-
-		mutex_unlock(&drv_state.lock);
-	}
-	return len;
-}
-
-/* updated to use uv required by 8x60 architecture - faux123 */
-void acpuclk_set_vdd(unsigned int khz, int vdd_uv) {
-
-	int i;
-	unsigned int new_vdd_uv;
-//	int vdd_uv;
-
-//	vdd_uv = vdd_mv * 1000;
-
-	mutex_lock(&drv_state.lock);
-
-	for (i = 0; acpu_freq_tbl[i].acpuclk_khz; i++) {
-		if (khz == 0)
-			new_vdd_uv = min(max((acpu_freq_tbl[i].vdd_sc + vdd_uv), (unsigned int)MIN_VDD_SC), (unsigned int)MAX_VDD_SC);
-		else if ( acpu_freq_tbl[i].acpuclk_khz == khz)
-			new_vdd_uv = min(max((unsigned int)vdd_uv, (unsigned int)MIN_VDD_SC), (unsigned int)MAX_VDD_SC);
-		else 
-			continue;
-
-		acpu_freq_tbl[i].vdd_sc = new_vdd_uv;
-	}
-
-	mutex_unlock(&drv_state.lock);
-}
-#endif	/* CONFIG_CPU_VOTALGE_TABLE */
-
 static void __init scpll_init(int pll, unsigned int max_l_val)
 {
 	uint32_t regval;
@@ -971,6 +915,54 @@ static void __init bus_init(void)
 		BUG();
 	}
 }
+
+#ifdef CONFIG_CPU_VOLTAGE_TABLE
+
+#define HFPLL_MIN_VDD		 600000
+#define HFPLL_MAX_VDD		1400000
+
+ssize_t acpuclk_get_vdd_levels_str(char *buf) {
+
+	int i, len = 0;
+
+	if (buf) {
+		mutex_lock(&drv_state.lock);
+
+		for (i = 0; acpu_freq_tbl[i].acpuclk_khz; i++) {
+			/* updated to use uv required by 8x60 architecture - faux123 */
+			len += sprintf(buf + len, "%8lu: %8d\n", acpu_freq_tbl[i].acpuclk_khz,
+				acpu_freq_tbl[i].vdd_sc );
+		}
+
+		mutex_unlock(&drv_state.lock);
+	}
+	return len;
+}
+
+/* updated to use uv required by 8x60 architecture - faux123 */
+void acpuclk_set_vdd(unsigned int khz, int vdd_uv) {
+
+	int i;
+	unsigned int new_vdd_uv;
+
+	mutex_lock(&drv_state.lock);
+
+	for (i = 0; acpu_freq_tbl[i].acpuclk_khz; i++) {
+		if (khz == 0)
+			new_vdd_uv = min(max((unsigned int)(acpu_freq_tbl[i].vdd_sc + vdd_uv),
+				(unsigned int)HFPLL_MIN_VDD), (unsigned int)HFPLL_MAX_VDD);
+		else if ( acpu_freq_tbl[i].acpuclk_khz == khz)
+			new_vdd_uv = min(max((unsigned int)vdd_uv,
+				(unsigned int)HFPLL_MIN_VDD), (unsigned int)HFPLL_MAX_VDD);
+		else 
+			continue;
+
+		acpu_freq_tbl[i].vdd_sc = new_vdd_uv;
+	}
+	pr_warn("faux123: user voltage table modified!\n");
+	mutex_unlock(&drv_state.lock);
+}
+#endif	/* CONFIG_CPU_VOTALGE_TABLE */
 
 #ifdef CONFIG_CPU_FREQ_MSM
 static struct cpufreq_frequency_table freq_table[NR_CPUS][30];
