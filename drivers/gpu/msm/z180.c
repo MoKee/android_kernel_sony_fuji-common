@@ -621,8 +621,6 @@ static int z180_stop(struct kgsl_device *device)
 
 	del_timer_sync(&device->idle_timer);
 
-	del_timer_sync(&device->idle_timer);
-
 	kgsl_mmu_stop(&device->mmu);
 
 	/* Disable the clocks before the power rail. */
